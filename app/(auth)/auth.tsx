@@ -18,7 +18,67 @@ const AuthScreen = () => {
   const router = useRouter();
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const checkBiometricSupport = async () => {
+    const supported = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    setIsBiometricSupported(supported && isEnrolled);
+    // if (supported) {
+    //     const biometryType = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    //     return biometryType.includes(1) || biometryType.includes(2);
+    // }
+    // return false;
+  };
+
+  const handleAuthentication = async () => {
+    try {
+      setIsAuthenticating(true);
+      setError("");
+      const supported = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      const biometryType =
+        await LocalAuthentication.supportedAuthenticationTypesAsync();
+
+      //   if (
+      //     !supported ||
+      //     !isEnrolled ||
+      //     !biometryType.includes(1) ||
+      //     !biometryType.includes(2)
+      //   ) {
+      //     setError("Biometric authentication is not supported on this device");
+      //     setIsAuthenticating(false);
+      //     return;
+      //   }
+
+      // handle supported biometric authentication
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage:
+          supported && isEnrolled
+            ? "Authenticate with Face ID/ Touch ID"
+            : "Enter with PIN",
+
+        fallbackLabel: "Use your PIN",
+        cancelLabel: "Cancel",
+        disableDeviceFallback: false,
+      });
+
+      if (result.success) {
+        router.replace("/");
+      } else {
+        setError(result.error);
+      }
+      setIsAuthenticating(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    checkBiometricSupport();
+  }, []);
+
   return (
     <LinearGradient colors={["#00bf63", "#00b5d3"]} style={styles.container}>
       <View style={styles.content}>
@@ -51,9 +111,7 @@ const AuthScreen = () => {
             <Text style={styles.welcomeSubText}>Sign in with your PIN</Text>
           )}
           <TouchableOpacity
-            onPress={() => {
-              //   router.replace("/login");
-            }}
+            onPress={handleAuthentication}
             disabled={isAuthenticating}
             style={[styles.button, isAuthenticating && styles.buttonDisabled]}
           >
@@ -61,7 +119,7 @@ const AuthScreen = () => {
               name={
                 isBiometricSupported ? "finger-print-outline" : "keypad-outline"
               }
-              style={{ marginRight: 10 }}
+              style={{ marginRight: 0 }}
               size={24}
               color="white"
             />
@@ -139,6 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
     backgroundColor: "#4CAF50",
+    paddingHorizontal: 20,
     borderRadius: 5,
     width: "100%",
   },
