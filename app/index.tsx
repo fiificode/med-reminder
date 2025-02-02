@@ -21,7 +21,7 @@ const SplashScreen = () => {
     }).start();
 
     const timer = setTimeout(() => {
-      // router.replace("Home");
+      router.replace("/auth");
     }, 3000);
 
     return () => {
@@ -41,7 +41,7 @@ const SplashScreen = () => {
           style={{ width: 180, height: 180 }}
         />
         <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>
-          Your Medication Reminder
+          Your Personal Medication Reminder
         </Text>
       </Animated.View>
     </View>
