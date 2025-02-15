@@ -24,11 +24,6 @@ const AuthScreen = () => {
     const supported = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
     setIsBiometricSupported(supported && isEnrolled);
-    // if (supported) {
-    //     const biometryType = await LocalAuthentication.supportedAuthenticationTypesAsync();
-    //     return biometryType.includes(1) || biometryType.includes(2);
-    // }
-    // return false;
   };
 
   const handleAuthentication = async () => {
@@ -39,19 +34,6 @@ const AuthScreen = () => {
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
       const biometryType =
         await LocalAuthentication.supportedAuthenticationTypesAsync();
-
-      //   if (
-      //     !supported ||
-      //     !isEnrolled ||
-      //     !biometryType.includes(1) ||
-      //     !biometryType.includes(2)
-      //   ) {
-      //     setError("Biometric authentication is not supported on this device");
-      //     setIsAuthenticating(false);
-      //     return;
-      //   }
-
-      // handle supported biometric authentication
 
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage:
@@ -65,7 +47,7 @@ const AuthScreen = () => {
       });
 
       if (result.success) {
-        router.replace("/");
+        router.replace("/(tabs)");
       } else {
         setError(result.error);
       }
@@ -80,7 +62,7 @@ const AuthScreen = () => {
   }, []);
 
   return (
-    <LinearGradient colors={["#00bf63", "#00b5d3"]} style={styles.container}>
+    <LinearGradient colors={["#020112", "#101014"]} style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Image
@@ -196,13 +178,13 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: "center",
     padding: 10,
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#101014",
     paddingHorizontal: 20,
     borderRadius: 5,
     width: "100%",
   },
   buttonDisabled: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#101014",
     opacity: 0.5,
   },
   buttonText: {
